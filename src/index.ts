@@ -2,12 +2,28 @@ import WebWatcher from './core/WebWatcher';
 import master from './core/WatcherMaster';
 import { setInterval } from 'timers';
 
-const ww = new WebWatcher('https://code.geeku.net/', 'title', {
-    parseJs: true
+const ww1 = new WebWatcher('https://code.geeku.net/', 'title', {
+    change (data) {
+        console.log('Geeku Callback:', data);
+    },
+    nochange () {
+        console.log('Geeku No change');
+    }
 });
-ww.run();
-// master.add(ww);
+const ww2 = new WebWatcher('http://www.baidu.com/', 'title', {
+    parseJs: true,
+    intervel: 20000,
+    change (data) {
+        console.log('Baidu Callback:', data);
+    },
+    nochange () {
+        console.log('Baidu No change');
+    }
+});
+master.add([ww1, ww2]);
 
-// setInterval(() => {
-//     master.walk();
-// }, 1000);
+let i = 0;
+setInterval(() => {
+    console.log('[Counter]: ', i++);
+    master.walk();
+}, 1000);
