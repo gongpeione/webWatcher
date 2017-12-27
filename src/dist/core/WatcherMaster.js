@@ -2,15 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const EmailQueue_1 = require("./EmailQueue");
 function addEmailQueue(ww) {
+    if (!ww.email) {
+        return;
+    }
     ww.addListener('change', data => {
-        if (ww.email) {
-            const email = ww.email;
-            EmailQueue_1.default.add({
-                email,
-                content: data,
-                title: ''
-            });
-        }
+        const email = ww.email;
+        EmailQueue_1.default.add({
+            email,
+            content: data,
+            title: `"${ww.url}" content have been changed.`
+        });
     });
 }
 class WatcherMaster {

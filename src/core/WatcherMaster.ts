@@ -1,16 +1,17 @@
 import WebWatcher from "./WebWatcher";
-import EmailQueue from "./EmailQueue";
+import EmailQueue, {EmailObj} from "./EmailQueue";
 
 function addEmailQueue (ww: WebWatcher) {
+    if (!ww.email) {
+        return;
+    }
     ww.addListener('change', data => {
-        if (ww.email) {
-            const email = ww.email;
-            EmailQueue.add({
-                email,
-                content: data,
-                title: ''
-            });
-        }
+        const email = ww.email;
+        EmailQueue.add({
+            email,
+            content: data,
+            title: `"${ww.url}" content have been changed.`
+        } as EmailObj);
     });
 }
 

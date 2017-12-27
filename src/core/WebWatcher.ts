@@ -32,7 +32,6 @@ let browser: puppeteer.Browser;
 export default class WebWatcher extends EventEmitter {
 
     private oldContent: string = '';
-    private url: string;
     private selector: string;
     private options: any;
     private http: AxiosInstance;
@@ -41,6 +40,7 @@ export default class WebWatcher extends EventEmitter {
     private inProcess: boolean;
     private page: puppeteer.Page = null;
 
+    public url: string;
     public email: string;
     
     constructor (url: string, selector: string, options?: WebWatcherConfig ) {

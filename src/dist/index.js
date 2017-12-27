@@ -4,6 +4,7 @@ const WebWatcher_1 = require("./core/WebWatcher");
 const WatcherMaster_1 = require("./core/WatcherMaster");
 const timers_1 = require("timers");
 const fs = require("fs");
+const EmailQueue_1 = require("./core/EmailQueue");
 const listFile = './list.json';
 let listStr = fs.readFileSync(listFile, { encoding: 'utf8' });
 let list = JSON.parse(listStr);
@@ -26,6 +27,7 @@ function init() {
         wwList.push(new WebWatcher_1.default(item.url, item.selector, {
             parseJs: item.parseJs,
             intervel: item.intervel,
+            email: item.email,
             change(data) {
                 console.log(`[WebWatcher] URL: ${item.url}, Selector: ${item.selector}, Data: ${data}`);
             },
@@ -38,6 +40,7 @@ function init() {
     WatcherMaster_1.default.add(wwList);
     timer = timers_1.setInterval(() => {
         WatcherMaster_1.default.walk();
+        EmailQueue_1.default.walk();
     }, 1000);
 }
 //# sourceMappingURL=index.js.map

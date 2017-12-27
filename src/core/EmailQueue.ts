@@ -3,7 +3,7 @@ import SMTPTransport from 'nodemailer/lib/smtp-transport'
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 
-interface EmailObj {
+export interface EmailObj {
     email: string;
     content: string;
     title: string;
@@ -25,20 +25,16 @@ const smtpConfig = {
 
 let transporter = mailer.createTransport(smtpConfig);
 let mailOptions = {
-    from: '"Fred Foo 👻" <403075093@qq.com>', // sender address
-    to: '403075093@qq.com', // list of receivers
-    subject: 'Hello ✔', // Subject line
-    text: 'Hello world?', // plain text body
-    html: '<b>Hello world?</b>' // html body
+    from: `<${process.env.SMTP_EMAILADDR}>`, 
+    to: 'aa@bb.com', 
+    subject: 'Hello', 
+    text: 'Hello world', 
+    html: '<b>Hello world</b>' 
 };
-transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-        return console.log(error);
-    }
-});
+
 
 class EmailQueue {
-    private queue: Array<any> = [];
+    private queue: Array<EmailObj> = [];
     public inProcess: boolean = false;
     constructor () {
     }
@@ -51,7 +47,23 @@ class EmailQueue {
         if (this.inProcess) {
             return;
         }
-        const nextEmail = this.queue.unshift();
+
+        const nextEmail = this.queue.shift();
+        if (!nextEmail) {
+            return;
+        }
+
+        mailOptions.to = nextEmail.email;
+        mailOptions.subject = nextEmail.title;
+        mailOptions.text = nextEmail.content;
+        mailOptions.html = `<p>${nextEmail.content}</p>`;
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            this.inProcess = false;
+            if (error) {
+                return console.log(error);
+            }
+        });
     }
 }
 

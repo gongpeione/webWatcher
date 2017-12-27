@@ -2,6 +2,7 @@ import WebWatcher from './core/WebWatcher';
 import master from './core/WatcherMaster';
 import { setInterval, clearInterval } from 'timers';
 import * as fs from 'fs';
+import EmailQueue from './core/EmailQueue';
 
 const listFile = './list.json';
 let listStr = fs.readFileSync(listFile, {encoding: 'utf8'});
@@ -28,6 +29,7 @@ function init () {
         wwList.push(new WebWatcher(item.url, item.selector, {
             parseJs: item.parseJs,
             intervel: item.intervel,
+            email: item.email,
             change (data) {
                 console.log(`[WebWatcher] URL: ${item.url}, Selector: ${item.selector}, Data: ${data}`);
             },
@@ -41,5 +43,6 @@ function init () {
     
     timer = setInterval(() => {
         master.walk();
+        EmailQueue.walk();
     }, 1000);
 }
