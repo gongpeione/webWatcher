@@ -1,16 +1,1 @@
-[
-    {
-        "url": "https://code.geeku.net",
-        "selector": "h1",
-        "parseJs": true,
-        "intervel": 5000,
-        "email": "ggongpei@qq.com"
-    },
-    {
-        "url": "http://www.baidu.com",
-        "selector": "title",
-        "parseJs": false,
-        "intervel": 2000,
-        "email": "ggongpei@qq.com"
-    }
-]
+[{"url":"https://code.geeku.net","selector":"h1","parseJs":true,"intervel":5000,"email":"ggongpei@qq.com"}]

@@ -3,8 +3,9 @@ import master from './core/WatcherMaster';
 import { setInterval, clearInterval } from 'timers';
 import * as fs from 'fs';
 import EmailQueue from './core/EmailQueue';
+import * as path from 'path';
 
-const listFile = './list.json';
+const listFile = path.resolve('./list.json');
 let listStr = fs.readFileSync(listFile, {encoding: 'utf8'});
 let list: Array<any> = JSON.parse(listStr);
 let wwList: Array<WebWatcher> = [];

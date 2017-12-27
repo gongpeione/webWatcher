@@ -13,6 +13,9 @@ const axios_1 = require("axios");
 const events_1 = require("events");
 const puppeteer = require("puppeteer");
 const https = require("https");
+const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
 const defaultOptions = {
     method: 'get',
     timeout: 10000,
@@ -33,13 +36,19 @@ let browser;
 class WebWatcher extends events_1.EventEmitter {
     constructor(url, selector, options) {
         super();
-        this.oldContent = '';
+        this.lastContent = '';
+        this.lastRunTime = 0;
+        this.inProcess = false;
         this.page = null;
         this.url = url;
         this.selector = selector;
         const defaultOptCopy = JSON.parse(JSON.stringify(defaultOptions));
         this.options = Object.assign(defaultOptCopy, options);
         this.intervel = this.options.intervel;
+        this.hash = crypto
+            .createHash('md5')
+            .update(`${this.url}${this.selector}${this.intervel}${this.email}`)
+            .digest('hex');
         this.http = axios_1.default.create({
             timeout: this.options.timeout,
             headers: this.options.headers,
@@ -56,6 +65,12 @@ class WebWatcher extends events_1.EventEmitter {
         if (this.options.nochange) {
             this.addListener('nochange', this.options.nochange);
         }
+        const hashFilePath = path.resolve(`./.cache/${this.hash}`);
+        if (!fs.existsSync(hashFilePath)) {
+            fs.writeFileSync(hashFilePath, '');
+        }
+        this.last = fs.readFileSync(path.resolve(`./.cache/${this.hash}`), { encoding: 'utf8' }) || '{}';
+        this.last = JSON.parse(this.last);
         if (this.options.parseJs) {
             if (!browser) {
                 console.warn('No browser object found.');
@@ -89,14 +104,15 @@ class WebWatcher extends events_1.EventEmitter {
     run() {
         return __awaiter(this, void 0, void 0, function* () {
             const currentTime = new Date().getTime();
-            if (currentTime - this.lastRunTime < this.intervel ||
+            if (this.last &&
+                currentTime - this.lastRunTime < this.intervel ||
                 this.inProcess) {
                 return;
             }
             if (this.options.parseJs && !this.page) {
                 this.page = yield browser.newPage();
             }
-            this.lastRunTime = currentTime;
+            this.lastRunTime = this.last.lastRunTime = currentTime;
             this.inProcess = true;
             let webpageContent = '';
             try {
@@ -104,7 +120,7 @@ class WebWatcher extends events_1.EventEmitter {
             }
             catch (e) {
                 console.log(e);
-                webpageContent = this.oldContent;
+                webpageContent = this.lastContent;
             }
             this.currentContent(webpageContent);
         });
@@ -113,13 +129,15 @@ class WebWatcher extends events_1.EventEmitter {
         const $ = cheerio.load(content, { decodeEntities: false });
         const dist = $(this.selector).html();
         this.inProcess = false;
-        if (this.oldContent === dist) {
+        if (this.lastContent === dist ||
+            this.last.lastContent === dist) {
             this.emit('nochange');
             return;
         }
         else {
-            this.oldContent = dist;
+            this.lastContent = this.last.lastContent = dist;
             this.emit('change', dist);
+            fs.writeFile(`./.cache/${this.hash}`, JSON.stringify(this.last), e => e);
         }
     }
 }

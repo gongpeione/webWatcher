@@ -20,20 +20,26 @@
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <style>
         #app {
+            width: 90vw;
+            max-width: 1080px;
+            margin: 0 auto;
         }
         h1 {
             text-align: center;
             color: #409EFF;
             margin: 80px;
         }
-        .addNew .el-row {
+        .addNew {
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .addNew .el-row > .el-input,
-        .addNew .el-row > .el-checkbox {
+        .addNew > .el-input,
+        .addNew > .el-checkbox {
             padding: 0 5px;
+        }
+        .addNew .el-input-number {
+            width: 500px;
         }
         .control {
             text-align: center;
@@ -45,48 +51,53 @@
 
     <div id="app">
         
-
-        <el-menu
-            :default-active="activeIndex2"
-            class="el-menu-demo"
-            mode="horizontal"
-            @select="handleSelect">
-            <el-menu-item index="1">Processing Center</el-menu-item>
-                <el-submenu index="2">
-                <template slot="title">Workspace</template>
-                <el-menu-item index="2-1">item one</el-menu-item>
-                <el-menu-item index="2-2">item two</el-menu-item>
-                <el-menu-item index="2-3">item three</el-menu-item>
-            </el-submenu>
-            <el-menu-item index="3"><a href="https://www.ele.me" target="_blank">Orders</a></el-menu-item>
-        </el-menu>
-
+        <h1>Web Watcher</h1>
 
         <el-table :data="data" style="width: 100%">
-            <el-table-column prop="url" label="Url" width="380">
-            </el-table-column>
-            <el-table-column prop="selector" label="Selector" width="360">
-            </el-table-column>
-            <el-table-column prop="parseJs ? 'True' : 'False'" label="Parse JS" width="100">
-            </el-table-column>
-            <el-table-column fixed="right" label="Operations" width="120">
+            <el-table-column label="Url" width="300">
                 <template slot-scope="scope">
-                    <el-button @click="handleClick" type="danger" size="small" round>Remove</el-button>
+                    <el-input placeholder="URL" v-model="scope.row.url" size="mini"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column label="Selector" width="200">
+                <template slot-scope="scope">
+                    <el-input placeholder="Selector" v-model="scope.row.selector" size="mini"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column label="Parse JS" width="100">
+                <template slot-scope="scope">
+                    <el-checkbox v-model="scope.row.parseJs"></el-checkbox>
+                </template>
+            </el-table-column>
+            <el-table-column prop="intervel" label="Intervel (ms)" width="200">
+                <template slot-scope="scope">
+                    <el-input-number size="mini" v-model="scope.row.intervel" step="1000"></el-input-number>
+                </template>
+            </el-table-column>
+            <el-table-column prop="email" label="Email" width="200">
+                <template slot-scope="scope">
+                    <el-input placeholder="Email" v-model="scope.row.email" size="mini"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="Operations" width="100">
+                <template slot-scope="scope">
+                    <el-button @click="save" type="primary" size="small" round>Save</el-button>
+                    <!-- <el-button @click="remove" type="danger" size="small" round>Remove</el-button> -->
                 </template>
             </el-table-column>
         </el-table>
         <br>
         <section class="addNew">
-            <el-row>
-                <el-input placeholder="Url" v-model="url"></el-input>
-                <el-input placeholder="Selector" v-model="selector"></el-input>
-                <el-checkbox v-model="parseJs">Parse JS</el-checkbox>
-                <el-button type="success" round @click="add">Add</el-button>
-            </el-row>
+            <el-input placeholder="URL" v-model="url" size="mini"></el-input>
+            <el-input placeholder="Selector" v-model="selector" size="mini"></el-input>
+            <el-checkbox v-model="parseJs" size="mini">Parse JS</el-checkbox>
+            <el-input-number size="mini" v-model="intervel" step="1000"></el-input-number>
+            <el-input placeholder="Email" v-model="email" size="mini"></el-input>
+            <el-button type="success" round @click="add" size="mini">Add</el-button>
         </section>
         <br>
         <div class="control">
-            <el-button type="success" round>Save</el-button>
+            <el-button type="success" @click="save" round>Save</el-button>
         </div>
     </div>
 </body>
@@ -104,18 +115,29 @@
                 data: null,
                 url: '',
                 selector: '',
-                parseJs: ''
+                parseJs: '',
+                intervel: 0,
+                email: ''
             }
         },
         methods: {
             save: function () {
-                // fetch('/list', {
-                //     method: "POST",
-                //     headers: {
-                //         "Content-Type": "text/plain"
-                //     },
-                //     body: JSON.stringify(this.data)
-                // }).then(res => res.json()).then(data => this.data = data);
+                fetch('/list', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "text/plain"
+                    },
+                    body: JSON.stringify(this.data)
+                }).then(res => res.json()).then(data => {
+                    if (data.code > 0) {
+                        this.$message('Save Successful!', {type: 'success'});
+                    } else {
+                        this.$message.error('Failed, ' + data.msg);
+                    }
+                });
+            },
+            edit: function (obj) {
+                this.$message(obj, this.data.indexOf(obj))
             },
             add: function () {
                 if (
@@ -128,11 +150,15 @@
                 this.data.push({
                     url: this.url,
                     selector: this.selector,
-                    parseJs: this.parseJs
+                    parseJs: this.parseJs,
+                    intervel: this.intervel,
+                    email: this.email
                 });
                 this.url = '';
                 this.selector = '';
                 this.parseJs = false;
+                this.intervel = 0;
+                this.email = '';
                 this.save();
             }
         },
