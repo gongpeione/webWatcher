@@ -8,12 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const cheerio = require("cheerio");
 const axios_1 = require("axios");
 const events_1 = require("events");
+const puppeteer = require("puppeteer");
 const defaultOptions = {
     method: 'get',
-    intervel: 10000,
     timeout: 10000,
     headers: {},
     parseJs: false
@@ -28,34 +27,53 @@ class WebWatcher extends events_1.EventEmitter {
         this.options = Object.assign(defaultOptCopy, options);
         this.http = axios_1.default.create({
             timeout: this.options.timeout,
+            headers: this.options.headers
         });
+        if (this.options.email) {
+            this.email = this.options.email;
+        }
+        if (this.options.callback) {
+            this.addListener('data', data => {
+                this.options.callback.call(data);
+            });
+        }
     }
-    run() {
+    request() {
         return __awaiter(this, void 0, void 0, function* () {
-            let webpageContent = '';
-            try {
-                webpageContent = yield this.http.request({
+            if (this.options.parseJs) {
+                const browser = yield puppeteer.launch();
+                const page = yield browser.newPage();
+                yield page.goto(this.url);
+                const bodyHandle = yield page.$('body');
+                const body = yield page.evaluate(() => {
+                    return document.querySelector('h1').innerText;
+                });
+                return body;
+            }
+            else {
+                return yield this.http.request({
                     method: this.options.method,
                     url: this.url
                 }).then(res => {
                     return res.data;
                 });
             }
+        });
+    }
+    run() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let webpageContent = '';
+            try {
+                webpageContent = yield this.request();
+            }
             catch (e) {
+                console.log(e);
                 webpageContent = this.oldContent;
             }
-            this.currentContent(webpageContent);
+            console.log(webpageContent);
         });
     }
     currentContent(content) {
-        const $ = cheerio.load(content);
-        const dist = $(this.selector).text();
-        if (this.oldContent === dist) {
-            return;
-        }
-        else {
-            this.emit('data', dist);
-        }
     }
 }
 exports.default = WebWatcher;

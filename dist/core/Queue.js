@@ -2,7 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class EmailQueue {
     constructor() {
-        if (this instanceof EmailQueue) { }
+        this.queue = [];
+    }
+    add(email) {
+        this.queue.push(email);
     }
 }
 let queueInstance = new EmailQueue();

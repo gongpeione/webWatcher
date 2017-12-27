@@ -1,4 +1,5 @@
 import WebWatcher from "./WebWatcher";
+import EmailQueue from "./EmailQueue";
 
 class WatcherMaster {
     private watchers: Array<WebWatcher> = [];
@@ -6,6 +7,16 @@ class WatcherMaster {
     }
 
     add (ww: WebWatcher) {
+        ww.addListener('data', data => {
+            if (ww.email) {
+                const email = ww.email;
+                EmailQueue.add({
+                    email,
+                    content: data,
+                    title: ''
+                });
+            }
+        });
         this.watchers.push();
     }
 

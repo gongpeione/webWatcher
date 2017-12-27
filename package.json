@@ -1,8 +1,13 @@
 {
   "dependencies": {
     "@types/cheerio": "^0.22.6",
+    "@types/dotenv": "^4.0.2",
+    "@types/nodemailer": "^4.3.1",
+    "@types/puppeteer": "^0.13.9",
     "axios": "^0.17.1",
     "cheerio": "^1.0.0-rc.2",
+    "dotenv": "^4.0.0",
+    "nodemailer": "^4.4.1",
     "puppeteer": "^0.13.0"
   }
 }

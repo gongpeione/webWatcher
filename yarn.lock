@@ -6,9 +6,32 @@
   version "0.22.6"
   resolved "https://registry.yarnpkg.com/@types/cheerio/-/cheerio-0.22.6.tgz#ad8c630a942efe3fc59165857851b55f95de2d50"
 
+"@types/dotenv@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@types/dotenv/-/dotenv-4.0.2.tgz#f2983f0afe9fd7f6eb8aef515a4d77f4cbaa0597"
+  dependencies:
+    "@types/node" "*"
+
+"@types/events@*":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/events/-/events-1.1.0.tgz#93b1be91f63c184450385272c47b6496fd028e02"
+
 "@types/node@*":
   version "8.5.2"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.5.2.tgz#83b8103fa9a2c2e83d78f701a9aa7c9539739aa5"
+
+"@types/nodemailer@^4.3.1":
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-4.3.1.tgz#e3985c1b7c7bbbb2a886108b89f1c7ce9a690654"
+  dependencies:
+    "@types/node" "*"
+
+"@types/puppeteer@^0.13.9":
+  version "0.13.9"
+  resolved "https://registry.yarnpkg.com/@types/puppeteer/-/puppeteer-0.13.9.tgz#2448ebddb91e5336bb2f771d76401c70b43a7fe6"
+  dependencies:
+    "@types/events" "*"
+    "@types/node" "*"
 
 agent-base@^4.1.0:
   version "4.1.2"
@@ -129,6 +152,10 @@ domutils@^1.5.1:
     dom-serializer "0"
     domelementtype "1"
 
+dotenv@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-4.0.0.tgz#864ef1379aced55ce6f95debecdce179f7a0cd1d"
+
 entities@^1.1.1, entities@~1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.1.tgz#6e5c2d0a5621b5dadaecef80b90edfb5cd7772f0"
@@ -243,6 +270,10 @@ mkdirp@0.5.0:
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
+
+nodemailer@^4.4.1:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-4.4.1.tgz#ce480eb3db7b949b3366e301b8f0af1c1248025e"
 
 nth-check@~1.0.1:
   version "1.0.1"
