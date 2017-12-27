@@ -31,7 +31,6 @@ class EmailQueue {
             return;
         }
         const nextEmail = this.queue.pop();
-
     }
 }
 

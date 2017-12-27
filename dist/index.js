@@ -3,7 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const WebWatcher_1 = require("./core/WebWatcher");
 const WatcherMaster_1 = require("./core/WatcherMaster");
 const timers_1 = require("timers");
-const ww1 = new WebWatcher_1.default('https://code.geeku.net/', 'title', {
+const ww1 = new WebWatcher_1.default('https://code.geeku.net/', 'h1', {
+    parseJs: true,
+    intervel: 20000,
     change(data) {
         console.log('Geeku Callback:', data);
     },
@@ -12,8 +14,6 @@ const ww1 = new WebWatcher_1.default('https://code.geeku.net/', 'title', {
     }
 });
 const ww2 = new WebWatcher_1.default('http://www.baidu.com/', 'title', {
-    parseJs: true,
-    intervel: 20000,
     change(data) {
         console.log('Baidu Callback:', data);
     },

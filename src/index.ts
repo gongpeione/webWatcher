@@ -2,7 +2,9 @@ import WebWatcher from './core/WebWatcher';
 import master from './core/WatcherMaster';
 import { setInterval } from 'timers';
 
-const ww1 = new WebWatcher('https://code.geeku.net/', 'title', {
+const ww1 = new WebWatcher('https://code.geeku.net/', 'h1', {
+    parseJs: true,
+    intervel: 20000,
     change (data) {
         console.log('Geeku Callback:', data);
     },
@@ -11,8 +13,6 @@ const ww1 = new WebWatcher('https://code.geeku.net/', 'title', {
     }
 });
 const ww2 = new WebWatcher('http://www.baidu.com/', 'title', {
-    parseJs: true,
-    intervel: 20000,
     change (data) {
         console.log('Baidu Callback:', data);
     },
