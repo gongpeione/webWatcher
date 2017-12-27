@@ -1,0 +1,14 @@
+[
+    {
+        "url": "https://code.geeku.net",
+        "selector": "h1",
+        "parseJs": true,
+        "intervel": 5000
+    },
+    {
+        "url": "http://www.baidu.com",
+        "selector": "title",
+        "parseJs": false,
+        "intervel": 2000
+    }
+]

@@ -36,6 +36,10 @@ class WatcherMaster {
         return this.watchers.splice(index, 1);
     }
 
+    removeAll () {
+        this.watchers = [];
+    }
+
     walk () {
         this.watchers.forEach(watcher => {
             watcher.run();

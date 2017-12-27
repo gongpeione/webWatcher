@@ -1,6 +1,7 @@
-import mailer from 'nodemailer';
+import * as mailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport'
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 
 interface EmailObj {
     email: string;
@@ -8,13 +9,33 @@ interface EmailObj {
     title: string;
 }
 
-dotenv.config();
+dotenv.config({
+    path: path.resolve('../.env')
+})
 
-// const SMTPConfig = `
-// smtps://${process.env.SMTP_USER}:/${process.env.SMTP_PASS}@/${process.env.SMTP_HOST}/?pool=true
-// `
+const smtpConfig = { 
+    host: process.env.SMTP_HOST,
+    port: +process.env.SMTP_PORT,
+    secure: !!process.env.SMTP_SECURE,
+    auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+    }
+};
 
-// let transporter = mailer.createTransport(SMTPConfig);
+let transporter = mailer.createTransport(smtpConfig);
+let mailOptions = {
+    from: '"Fred Foo 👻" <403075093@qq.com>', // sender address
+    to: '403075093@qq.com', // list of receivers
+    subject: 'Hello ✔', // Subject line
+    text: 'Hello world?', // plain text body
+    html: '<b>Hello world?</b>' // html body
+};
+transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+        return console.log(error);
+    }
+});
 
 class EmailQueue {
     private queue: Array<any> = [];
@@ -30,7 +51,7 @@ class EmailQueue {
         if (this.inProcess) {
             return;
         }
-        const nextEmail = this.queue.pop();
+        const nextEmail = this.queue.unshift();
     }
 }
 
