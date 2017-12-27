@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "dist",
+        "outDir": "src/dist",
         "rootDir": "src",
         "module": "commonjs",
         "noImplicitAny": true,
@@ -16,9 +16,11 @@
         "pretty": true
     },
     "include": [
-        "src/**/*"
+        "src"
     ],
     "exclude": [
         "node_modules",
-    ],
+        "src/view/**/*",
+        "src/dist/**/*"
+    ]
 }
