@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@types/cheerio": "^0.22.6",
+    "axios": "^0.17.1",
+    "cheerio": "^1.0.0-rc.2",
+    "puppeteer": "^0.13.0"
+  }
+}
