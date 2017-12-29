@@ -11,7 +11,7 @@ export interface EmailObj {
 
 dotenv.config({
     path: path.resolve('../.env')
-})
+});
 
 const smtpConfig = { 
     host: process.env.SMTP_HOST,

@@ -47,3 +47,5 @@ function init () {
         EmailQueue.walk();
     }, 1000);
 }
+
+export default master;

@@ -44,4 +44,5 @@ function init() {
         EmailQueue_1.default.walk();
     }, 1000);
 }
-//# sourceMappingURL=index.js.map
+exports.default = WatcherMaster_1.default;
+//# sourceMappingURL=ww.js.map
