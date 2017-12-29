@@ -68,6 +68,9 @@ class WebWatcher extends events_1.EventEmitter {
         if (this.options.nochange) {
             this.addListener('nochange', this.options.nochange);
         }
+        if (!fs.existsSync('./.cache/')) {
+            fs.mkdirSync('./.cache/');
+        }
         const hashFilePath = path.resolve(`./.cache/${this.hash}`);
         if (!fs.existsSync(hashFilePath)) {
             fs.writeFileSync(hashFilePath, '');

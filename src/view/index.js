@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 
 const listFile = '../list.json';
 
+const master = require('../dist/index');
+
 app.use(bodyParser.text());
 
 app.get('/', function (req, res) {
