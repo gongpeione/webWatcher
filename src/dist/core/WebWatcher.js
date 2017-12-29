@@ -26,7 +26,10 @@ const defaultOptions = {
 let browser;
 (() => __awaiter(this, void 0, void 0, function* () {
     try {
-        browser = yield puppeteer.launch();
+        browser = yield puppeteer.launch({
+            args: ['--no-sandbox'],
+            ignoreHTTPSErrors: true
+        });
     }
     catch (e) {
         browser = null;

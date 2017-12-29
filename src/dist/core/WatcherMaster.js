@@ -17,6 +17,7 @@ function addEmailQueue(ww) {
 class WatcherMaster {
     constructor() {
         this.watchers = [];
+        this.hashToIndex = {};
     }
     add(ww) {
         if (Array.isArray) {

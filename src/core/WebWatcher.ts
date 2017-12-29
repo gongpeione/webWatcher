@@ -25,7 +25,10 @@ const defaultOptions: WebWatcherConfig = {
 let browser: puppeteer.Browser;
 (async () => {
     try {
-        browser = await puppeteer.launch();
+        browser = await puppeteer.launch({
+            args: ['--no-sandbox'], 
+            ignoreHTTPSErrors: true
+        });
     } catch (e) {
         browser = null;
         console.log(e);

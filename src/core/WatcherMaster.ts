@@ -17,6 +17,7 @@ function addEmailQueue (ww: WebWatcher) {
 
 class WatcherMaster {
     private watchers: Array<WebWatcher> = [];
+    private hashToIndex: {[key: string]: number} = {};
     constructor () {
     }
 
