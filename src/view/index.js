@@ -31,4 +31,4 @@ app.post('/list', (req, res) => {
     });
 });
 
-app.listen(3000);
+app.listen(process.env.WW_PORT);
