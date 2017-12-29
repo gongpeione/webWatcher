@@ -21,6 +21,7 @@
     "exclude": [
         "node_modules",
         "src/view/**/*",
-        "src/dist/**/*"
+        "src/dist/**/*",
+        "src/start.js"
     ]
 }
