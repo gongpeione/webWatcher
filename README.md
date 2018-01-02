@@ -34,9 +34,9 @@ Geeku No change
 
 ## TODO
 
-[x] Web Control Panel
-[ ] Login
-[ ] Proxy pool
-[ ] Multithreading
-[ ] User system
-[ ] Webhook 
+- [x] Web Control Panel
+- [ ] Login
+- [ ] Proxy pool
+- [ ] Multithreading
+- [ ] User system
+- [ ] Webhook 
