@@ -25,6 +25,6 @@
     "puppeteer": "^0.13.0"
   },
   "scripts": {
-    "build": "tsc -p ."
+    "start": "cd src && pm2 start start.ts --name WW --watch"
   }
 }

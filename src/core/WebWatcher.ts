@@ -7,6 +7,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import { wwHash } from '../utils';
+import Paths from '../Paths';
 
 interface WebWatcherConfig extends AxiosRequestConfig {
     parseJs?: boolean,
@@ -91,14 +92,11 @@ export default class WebWatcher extends EventEmitter {
             this.addListener('nochange', this.options.nochange);
         }
 
-        if (!fs.existsSync('./.cache/')) {
-            fs.mkdirSync('./.cache/');
-        }
-        const hashFilePath = path.resolve(`./.cache/${this.hash}`);
+        const hashFilePath = path.resolve(Paths.cache, `./${this.hash}`);
         if (!fs.existsSync(hashFilePath)) {
             fs.writeFileSync(hashFilePath, '');
         }
-        this.last = fs.readFileSync(path.resolve(`./.cache/${this.hash}`), {encoding: 'utf8'}) || '{}';
+        this.last = fs.readFileSync(hashFilePath, {encoding: 'utf8'}) || '{}';
         this.last = JSON.parse(this.last);
 
         if (this.options.parseJs) {
@@ -164,7 +162,7 @@ export default class WebWatcher extends EventEmitter {
         const $ = cheerio.load(content, { decodeEntities: false });
         const dist = $(this.selector).html();
         this.inProcess = false;
-        console.log(this.last, dist);
+
         if (
             this.lastContent === dist ||
             this.last.lastContent === dist
@@ -174,7 +172,7 @@ export default class WebWatcher extends EventEmitter {
         } else {
             this.lastContent = this.last.lastContent = dist;
             this.emit('change', dist);
-            fs.writeFile(`./.cache/${this.hash}`, JSON.stringify(this.last), e => e);
+            fs.writeFile(path.resolve(Paths.cache, `./${this.hash}`), JSON.stringify(this.last), e => e);
         }
     }
 

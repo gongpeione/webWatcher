@@ -1,19 +1,18 @@
-import express from 'express';
+import * as express from 'express';
 import fs from 'fs';
-import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
+import * as bodyParser from 'body-parser';
+import * as cookieParser from 'cookie-parser';
+import * as dotenv from 'dotenv';
+import * as jwt from 'jsonwebtoken';
 import { md5 } from './utils';
 import WebWatcher from './core/WebWatcher';
 import * as path from 'path';
 import master from './ww';
+import Paths from './Paths';
 
 dotenv.config({
-    path: path.resolve(__dirname, '../../.env')
+    path: Paths.env
 });
-
-const listFile = path.resolve(__dirname, '../list.json');
 
 const app = express();
 app.use(bodyParser.json());
@@ -35,9 +34,9 @@ app.get('/', function (req, res) {
 });
 
 app.get('/login', (req, res) => {
-    token = req.cookies.token;
+    const token = req.cookies.token;
     if (token) {
-        jwt.verify(token, process.env.WW_SECRET, (err, decoded) => {
+        jwt.verify(token, process.env.WW_SECRET, (err: any, decoded: string) => {
             if (err) {
                 res.json({
                     code: -1,
@@ -105,16 +104,24 @@ app.get('/list', isAuthenticated, (req, res) => {
 });
 
 app.post('/list', isAuthenticated, (req, res) => {
-    const newList = req.body;
-    newList.forEach(item => {
-        master.add(new WebWatcher(item.url, ))
+    let newList = req.body;
+    if (!Array.isArray(newList)) {
+        newList = [newList];
+    }
+    newList.forEach((item: any)=> {
+        master.add(new WebWatcher(item.url, item.selector, {
+            email: item.email,
+            webhook: item.webhook,
+            intervel: item.intervel,
+        }));
     });
-    // fs.writeFile(listFile, req.body, {encoding: 'utf8'}, err => {
-    //     if (err) {
-    //         res.json({code: -1, msg: err});
-    //     }
-    //     res.json({code: 1});
-    // });
+
+    master.updateFile();
+
+    res.json({
+        code: 1,
+        msg: "Add successful."
+    });
 });
 
 app.post('/toggleState', isAuthenticated, (req, res) => {
@@ -128,6 +135,23 @@ app.post('/toggleState', isAuthenticated, (req, res) => {
             });
         }
     }
+});
+
+app.post('/remove', isAuthenticated, (req, res) => {
+    const id = req.body.id;
+    const targetWW = [...master].filter(ww => ww.id === id)[0];
+    if (targetWW) {
+        master.remove(targetWW);
+        res.json({
+            code: 1,
+            msg: `[id: ${id}] Removed.`
+        });
+        return;
+    }
+    res.json({
+        code: -1,
+        msg: `[id: ${id}] Not exists.`
+    });
 });
 
 app.listen(process.env.WW_PORT);

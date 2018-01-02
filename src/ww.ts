@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import EmailQueue from './core/EmailQueue';
 import * as path from 'path';
 
-const listFile = path.resolve(__dirname, '../list.json');
+const listFile = path.resolve(__dirname, './list.json');
 let listStr = fs.readFileSync(listFile, {encoding: 'utf8'});
 let list: Array<any> = JSON.parse(listStr);
 let wwList: Array<WebWatcher> = [];
@@ -42,10 +42,10 @@ function init () {
     master.removeAll();
     master.add(wwList);
     
-    // timer = setInterval(() => {
-    //     master.walk();
-    //     EmailQueue.walk();
-    // }, 1000);
+    timer = setInterval(() => {
+        master.walk();
+        EmailQueue.walk();
+    }, 1000);
 }
 
 export default master;

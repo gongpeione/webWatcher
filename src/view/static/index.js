@@ -29,6 +29,16 @@ new Vue({
         stop: function (id) {
             console.log(id);
         },
+        remove: function (id, row) {
+            http.post('/remove', { id }).then(({data}) => {
+                if (data.code > 0) {
+                    this.$message(data.msg, {type: 'success'});
+                    this.data.splice(this.data.indexOf(row), 1);
+                } else {
+                    this.$message.error('Failed, ' + data.msg);
+                }
+            });
+        },
         toggleState: function (id, row) {
             http.post('/toggleState', { id }).then(({data}) => {
                 if (data.code > 0) {
@@ -59,14 +69,7 @@ new Vue({
                 this.$message.error('URL or selector cannot be empty.');
                 return;
             }
-            // this.data.push({
-            //     url: this.url,
-            //     selector: this.selector,
-            //     parseJs: this.parseJs,
-            //     intervel: this.intervel,
-            //     email: this.email,
-            //     webhook: this.webhook
-            // });
+            
             http.post('/list', {
                 url: this.url,
                 selector: this.selector,
@@ -77,16 +80,25 @@ new Vue({
             }).then(({data}) => {
                 if (data.code > 0) {
                     this.$message('Add Successful!', {type: 'success'});
+                    this.data.push({
+                        url: this.url,
+                        selector: this.selector,
+                        parseJs: this.parseJs,
+                        intervel: this.intervel,
+                        email: this.email,
+                        webhook: this.webhook
+                    });
                 } else {
                     this.$message.error('Failed, ' + data.msg);
                 }
+                this.url = '';
+                this.selector = '';
+                this.parseJs = false;
+                this.intervel = 0;
+                this.email = '';
+                this.webhook = '';
             });
-            this.url = '';
-            this.selector = '';
-            this.parseJs = false;
-            this.intervel = 0;
-            this.email = '';
-            this.webhook = '';
+            
         },
         login: function (e) {
             e.preventDefault();

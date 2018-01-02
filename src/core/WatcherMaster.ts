@@ -2,6 +2,7 @@ import WebWatcher from "./WebWatcher";
 import EmailQueue, {EmailObj} from "./EmailQueue";
 import * as fs from 'fs';
 import * as path from 'path';
+import Paths from '../Paths';
 
 function addEmailQueue (ww: WebWatcher) {
     if (!ww.email) {
@@ -34,7 +35,7 @@ class WatcherMaster {
     }
 
     add (ww: WebWatcher | Array<WebWatcher>) {
-        if (Array.isArray) {
+        if (Array.isArray(ww)) {
             (ww as Array<WebWatcher>).forEach(ww => {
                 addEmailQueue(ww);
             });
@@ -47,7 +48,9 @@ class WatcherMaster {
 
     remove (ww: WebWatcher) {
         const index = this.watchers.indexOf(ww);
-        return this.watchers.splice(index, 1);
+        const delItem = this.watchers.splice(index, 1);
+        this.updateFile();
+        return delItem;
     }
 
     removeAll () {
@@ -67,7 +70,7 @@ class WatcherMaster {
             }
             switch (key) {
                 case 'running': {
-                    
+
                     break;
                 }
             }
@@ -88,8 +91,8 @@ class WatcherMaster {
                 running: ww.running
             });
         }
-        fs.writeFileSync(path.resolve(__dirname, './list.json'), JSON.stringify(list), {
-            encoding: 'utf8'
+        fs.writeFile(Paths.list, JSON.stringify(list), (e) => {
+            e && console.log(e);
         });
     }
 }

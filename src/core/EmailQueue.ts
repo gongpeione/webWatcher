@@ -2,6 +2,7 @@ import * as mailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport'
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import Paths from '../Paths';
 
 export interface EmailObj {
     email: string;
@@ -10,7 +11,7 @@ export interface EmailObj {
 }
 
 dotenv.config({
-    path: path.resolve('../../.env')
+    path: Paths.env
 });
 
 const smtpConfig = { 
