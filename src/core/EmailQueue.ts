@@ -10,10 +10,6 @@ export interface EmailObj {
     title: string;
 }
 
-dotenv.config({
-    path: Paths.env
-});
-
 const smtpConfig = { 
     host: process.env.SMTP_HOST,
     port: +process.env.SMTP_PORT,
