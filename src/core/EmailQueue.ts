@@ -59,6 +59,7 @@ class EmailQueue {
         mailOptions.text = nextEmail.content;
         mailOptions.html = `<p>${nextEmail.content}</p>`;
 
+        this.inProcess = true;
         transporter.sendMail(mailOptions, (error, info) => {
             this.inProcess = false;
             if (error) {
