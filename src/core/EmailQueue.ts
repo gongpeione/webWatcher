@@ -10,7 +10,7 @@ export interface EmailObj {
 }
 
 dotenv.config({
-    path: path.resolve('../.env')
+    path: path.resolve('../../.env')
 });
 
 const smtpConfig = { 

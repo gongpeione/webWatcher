@@ -44,6 +44,13 @@
         .control {
             text-align: center;
         }
+        .login {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .login .el-input {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 
@@ -53,52 +60,67 @@
         
         <h1>Web Watcher</h1>
 
-        <el-table :data="data" style="width: 100%">
-            <el-table-column label="Url" width="300">
-                <template slot-scope="scope">
-                    <el-input placeholder="URL" v-model="scope.row.url" size="mini"></el-input>
-                </template>
-            </el-table-column>
-            <el-table-column label="Selector" width="200">
-                <template slot-scope="scope">
-                    <el-input placeholder="Selector" v-model="scope.row.selector" size="mini"></el-input>
-                </template>
-            </el-table-column>
-            <el-table-column label="Parse JS" width="100">
-                <template slot-scope="scope">
-                    <el-checkbox v-model="scope.row.parseJs"></el-checkbox>
-                </template>
-            </el-table-column>
-            <el-table-column prop="intervel" label="Intervel (ms)" width="200">
-                <template slot-scope="scope">
-                    <el-input-number size="mini" v-model="scope.row.intervel" step="1000"></el-input-number>
-                </template>
-            </el-table-column>
-            <el-table-column prop="email" label="Email" width="200">
-                <template slot-scope="scope">
-                    <el-input placeholder="Email" v-model="scope.row.email" size="mini"></el-input>
-                </template>
-            </el-table-column>
-            <el-table-column fixed="right" label="Operations" width="100">
-                <template slot-scope="scope">
-                    <el-button @click="save" type="primary" size="small" round>Save</el-button>
-                    <!-- <el-button @click="remove" type="danger" size="small" round>Remove</el-button> -->
-                </template>
-            </el-table-column>
-        </el-table>
-        <br>
-        <section class="addNew">
-            <el-input placeholder="URL" v-model="url" size="mini"></el-input>
-            <el-input placeholder="Selector" v-model="selector" size="mini"></el-input>
-            <el-checkbox v-model="parseJs" size="mini">Parse JS</el-checkbox>
-            <el-input-number size="mini" v-model="intervel" step="1000"></el-input-number>
-            <el-input placeholder="Email" v-model="email" size="mini"></el-input>
-            <el-button type="success" round @click="add" size="mini">Add</el-button>
-        </section>
-        <br>
-        <div class="control">
-            <el-button type="success" @click="save" round>Save</el-button>
-        </div>
+        <template v-if="loggedIn">
+            <el-table :data="data" style="width: 100%">
+                <el-table-column label="Url" width="300">
+                    <template slot-scope="scope">
+                        <el-input placeholder="URL" v-model="scope.row.url" size="mini"></el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column label="Selector" width="200">
+                    <template slot-scope="scope">
+                        <el-input placeholder="Selector" v-model="scope.row.selector" size="mini"></el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column label="Parse JS" width="100">
+                    <template slot-scope="scope">
+                        <el-checkbox v-model="scope.row.parseJs"></el-checkbox>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="intervel" label="Intervel (ms)" width="200">
+                    <template slot-scope="scope">
+                        <el-input-number size="mini" v-model="scope.row.intervel" step="1000"></el-input-number>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="email" label="Email" width="200">
+                    <template slot-scope="scope">
+                        <el-input placeholder="Email" v-model="scope.row.email" size="mini"></el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="webhook" label="Webhook" width="200">
+                    <template slot-scope="scope">
+                        <el-input placeholder="Webhook" v-model="scope.row.webhook" size="mini"></el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="Operations" width="100">
+                    <template slot-scope="scope">
+                        <el-button @click="save" type="primary" size="small" round>Save</el-button>
+                        <!-- <el-button @click="remove" type="danger" size="small" round>Remove</el-button> -->
+                    </template>
+                </el-table-column>
+            </el-table>
+            <br>
+            <section class="addNew">
+                <el-input placeholder="URL" v-model="url" size="mini"></el-input>
+                <el-input placeholder="Selector" v-model="selector" size="mini"></el-input>
+                <el-checkbox v-model="parseJs" size="mini">Parse JS</el-checkbox>
+                <el-input-number size="mini" v-model="intervel" step="1000"></el-input-number>
+                <el-input placeholder="Email" v-model="email" size="mini"></el-input>
+                <el-input placeholder="Webhook" v-model="webhook" size="mini"></el-input>
+                <el-button type="success" round @click="add" size="mini">Add</el-button>
+            </section>
+            <br>
+            <div class="control">
+                <el-button type="success" @click="save" round>Save</el-button>
+            </div>
+        </template>
+        <template v-else>
+            <form class="login" @submit="login($event)">
+                <el-input placeholder="Username" v-model="user.username"></el-input>
+                <el-input placeholder="Password" type="password" v-model="user.password"></el-input>
+                <el-input type="submit" value="Login"></el-button>
+            </form>
+        </template>
     </div>
 </body>
 
@@ -106,7 +128,12 @@
 <script src="https://unpkg.com/vue/dist/vue.js"></script>
 <!-- import JavaScript -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.17.1/axios.js"></script>
 <script>
+    const http = axios.create({
+        timeout: 5000,
+        withCredentials: true
+    });
     new Vue({
         el: '#app',
         data: function () {
@@ -117,7 +144,13 @@
                 selector: '',
                 parseJs: '',
                 intervel: 0,
-                email: ''
+                email: '',
+                webhook: '',
+                loggedIn: false,
+                user: {
+                    username: '',
+                    password: ''
+                }
             }
         },
         methods: {
@@ -152,18 +185,46 @@
                     selector: this.selector,
                     parseJs: this.parseJs,
                     intervel: this.intervel,
-                    email: this.email
+                    email: this.email,
+                    webhook: this.webhook
                 });
                 this.url = '';
                 this.selector = '';
                 this.parseJs = false;
                 this.intervel = 0;
                 this.email = '';
+                this.webhook = '';
                 this.save();
+            },
+            login: function (e) {
+                e.preventDefault();
+                
+                http.post('/login', this.user).then(({data}) => {
+                    if (data.code < 0) {
+                        this.$message.error(data.msg);
+                        return;
+                    }
+                    if (data.code === 1) {
+                        this.loggedIn = true;
+                        this.getList();
+                    }
+                });
+
+                return false;
+            },
+            getList () {
+                http.get('/list').then(({data}) => {
+                    this.data = data;
+                });
             }
         },
         created: function () {
-            fetch('/list').then(res => res.json()).then(data => this.data = data);
+            http.get('/login').then(({data}) => {
+                if (data.code === 1) {
+                    this.loggedIn = true;
+                    this.getList();
+                }
+            });
         }
     })
 </script>

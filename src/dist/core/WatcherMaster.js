@@ -19,6 +19,11 @@ class WatcherMaster {
         this.watchers = [];
         this.hashToIndex = {};
     }
+    *[Symbol.iterator]() {
+        for (let ww of this.watchers) {
+            yield ww;
+        }
+    }
     add(ww) {
         if (Array.isArray) {
             ww.forEach(ww => {

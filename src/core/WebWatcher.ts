@@ -6,6 +6,7 @@ import * as https from 'https';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
+import {wwHash} from '../utils';
 
 interface WebWatcherConfig extends AxiosRequestConfig {
     parseJs?: boolean,
@@ -35,33 +36,39 @@ let browser: puppeteer.Browser;
     }
 })();
 
+const uuid = (() => {
+    let id = 0;
+    return function () {
+        return id++;
+    }
+});
+
 export default class WebWatcher extends EventEmitter {
 
     private lastContent: string = '';
-    private selector: string;
     private options: any;
     private http: AxiosInstance;
-    private intervel: number;
     private lastRunTime: number = 0;
     private inProcess: boolean = false;
     private page: puppeteer.Page = null;
     private last: any;
     
+    public id = uuid();
     public hash: string;
     public url: string;
     public email: string;
+    public webhook: string;
+    public intervel: number;
+    public selector: string;
     
-    constructor (url: string, selector: string, options?: WebWatcherConfig ) {
+    constructor (url: string, selector: string, options?: WebWatcherConfig) {
         super();
         this.url = url;
         this.selector = selector;
         const defaultOptCopy = JSON.parse(JSON.stringify(defaultOptions));
         this.options = Object.assign(defaultOptCopy, options);
         this.intervel = this.options.intervel;
-        this.hash = crypto
-                        .createHash('md5')
-                        .update(`${this.url}${this.selector}${this.intervel}${this.email}`)
-                        .digest('hex');
+        this.hash = wwHash(this);
         this.http = axios.create({
             timeout: this.options.timeout,
             headers: this.options.headers,
@@ -71,6 +78,9 @@ export default class WebWatcher extends EventEmitter {
         });
         if (this.options.email) {
             this.email = this.options.email;
+        }
+        if (this.options.webhook) {
+            this.webhook = this.options.webhook;
         }
         if (this.options.change) {
             this.addListener('change', this.options.change);
@@ -151,6 +161,7 @@ export default class WebWatcher extends EventEmitter {
         const $ = cheerio.load(content, { decodeEntities: false });
         const dist = $(this.selector).html();
         this.inProcess = false;
+        console.log(this.last, dist);
         if (
             this.lastContent === dist ||
             this.last.lastContent === dist

@@ -21,6 +21,12 @@ class WatcherMaster {
     constructor () {
     }
 
+    *[Symbol.iterator] () {
+        for (let ww of this.watchers) {
+            yield ww;
+        }
+    }
+
     add (ww: WebWatcher | Array<WebWatcher>) {
         if (Array.isArray) {
             (ww as Array<WebWatcher>).forEach(ww => {

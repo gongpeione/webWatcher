@@ -4,7 +4,7 @@ const mailer = require("nodemailer");
 const dotenv = require("dotenv");
 const path = require("path");
 dotenv.config({
-    path: path.resolve('../.env')
+    path: path.resolve('../../.env')
 });
 const smtpConfig = {
     host: process.env.SMTP_HOST,
