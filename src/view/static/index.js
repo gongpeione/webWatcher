@@ -59,13 +59,27 @@ new Vue({
                 this.$message.error('URL or selector cannot be empty.');
                 return;
             }
-            this.data.push({
+            // this.data.push({
+            //     url: this.url,
+            //     selector: this.selector,
+            //     parseJs: this.parseJs,
+            //     intervel: this.intervel,
+            //     email: this.email,
+            //     webhook: this.webhook
+            // });
+            http.post('/list', {
                 url: this.url,
                 selector: this.selector,
                 parseJs: this.parseJs,
                 intervel: this.intervel,
                 email: this.email,
                 webhook: this.webhook
+            }).then(({data}) => {
+                if (data.code > 0) {
+                    this.$message('Add Successful!', {type: 'success'});
+                } else {
+                    this.$message.error('Failed, ' + data.msg);
+                }
             });
             this.url = '';
             this.selector = '';
@@ -73,7 +87,6 @@ new Vue({
             this.intervel = 0;
             this.email = '';
             this.webhook = '';
-            this.save();
         },
         login: function (e) {
             e.preventDefault();

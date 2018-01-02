@@ -1,28 +1,29 @@
-const express = require('express');
-const app = express();
-const fs = require('fs');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const dotenv = require('dotenv');
-const path = require('path');
-const jwt = require('jsonwebtoken');
-const md5 = require('./dist/utils').md5;
+import express from 'express';
+import fs from 'fs';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
+import { md5 } from './utils';
+import WebWatcher from './core/WebWatcher';
+import * as path from 'path';
+import master from './ww';
 
 dotenv.config({
-    path: path.resolve(__dirname, '../.env')
+    path: path.resolve(__dirname, '../../.env')
 });
 
-const listFile = path.resolve(__dirname, './list.json');
-const master = require(path.resolve(__dirname, './dist/ww')).default;
- 
+const listFile = path.resolve(__dirname, '../list.json');
+
+const app = express();
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use('/static', express.static(path.resolve(__dirname, './view/static/')));
 
-function isAuthenticated (req, res, next) {
-    token = req.cookies.token;
+function isAuthenticated (req: express.Request, res: express.Response, next: express.NextFunction) {
+    const token = req.cookies.token;
     if (token) {
-        jwt.verify(token, process.env.WW_SECRET, (err, decoded) => {
+        jwt.verify(token, process.env.WW_SECRET, (err: any, decoded: string) => {
             if (err) { res.redirect('/'); }
             next();
         });
@@ -104,12 +105,16 @@ app.get('/list', isAuthenticated, (req, res) => {
 });
 
 app.post('/list', isAuthenticated, (req, res) => {
-    fs.writeFile(listFile, req.body, {encoding: 'utf8'}, err => {
-        if (err) {
-            res.json({code: -1, msg: err});
-        }
-        res.json({code: 1});
+    const newList = req.body;
+    newList.forEach(item => {
+        master.add(new WebWatcher(item.url, ))
     });
+    // fs.writeFile(listFile, req.body, {encoding: 'utf8'}, err => {
+    //     if (err) {
+    //         res.json({code: -1, msg: err});
+    //     }
+    //     res.json({code: 1});
+    // });
 });
 
 app.post('/toggleState', isAuthenticated, (req, res) => {

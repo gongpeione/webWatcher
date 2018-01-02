@@ -63,9 +63,6 @@ class WatcherMaster {
                     break;
                 }
             }
-            if (ww.hasOwnProperty(key)) {
-                ww[key] = options[key];
-            }
         }
         this.updateFile();
     }

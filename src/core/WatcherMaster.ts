@@ -67,11 +67,9 @@ class WatcherMaster {
             }
             switch (key) {
                 case 'running': {
+                    
                     break;
                 }
-            }
-            if ((ww as Object).hasOwnProperty(key)) {
-                (ww as any)[key] = options[key];
             }
         }
         this.updateFile();
