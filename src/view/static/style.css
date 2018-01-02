@@ -1,0 +1,33 @@
+#app {
+    width: 90vw;
+    max-width: 1080px;
+    margin: 0 auto;
+    min-width: 960px;
+}
+h1 {
+    text-align: center;
+    color: #409EFF;
+    margin: 80px;
+}
+.addNew {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.addNew > .el-input,
+.addNew > .el-checkbox {
+    padding: 0 5px;
+}
+.addNew .el-input-number {
+    width: 500px;
+}
+.control {
+    text-align: center;
+}
+.login {
+    max-width: 600px;
+    margin: 0 auto;
+}
+.login .el-input {
+    margin-bottom: 10px;
+}

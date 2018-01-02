@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const EmailQueue_1 = require("./EmailQueue");
+const fs = require("fs");
+const path = require("path");
 function addEmailQueue(ww) {
     if (!ww.email) {
         return;
@@ -14,6 +16,9 @@ function addEmailQueue(ww) {
         });
     });
 }
+const NOT_EDITABLE = [
+    'id'
+];
 class WatcherMaster {
     constructor() {
         this.watchers = [];
@@ -46,6 +51,39 @@ class WatcherMaster {
     walk() {
         this.watchers.forEach(watcher => {
             watcher.run();
+        });
+    }
+    update(ww, options) {
+        for (let key in options) {
+            if (NOT_EDITABLE.indexOf(key) >= 0) {
+                continue;
+            }
+            switch (key) {
+                case 'running': {
+                    break;
+                }
+            }
+            if (ww.hasOwnProperty(key)) {
+                ww[key] = options[key];
+            }
+        }
+        this.updateFile();
+    }
+    updateFile() {
+        const list = [];
+        for (let ww of this) {
+            list.push({
+                id: ww.id,
+                url: ww.url,
+                email: ww.email,
+                webhook: ww.webhook,
+                intervel: ww.intervel,
+                selector: ww.selector,
+                running: ww.running
+            });
+        }
+        fs.writeFileSync(path.resolve(__dirname, './list.json'), JSON.stringify(list), {
+            encoding: 'utf8'
         });
     }
 }

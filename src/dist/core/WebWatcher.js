@@ -41,7 +41,7 @@ const uuid = (() => {
     return function () {
         return id++;
     };
-});
+})();
 class WebWatcher extends events_1.EventEmitter {
     constructor(url, selector, options) {
         super();
@@ -50,6 +50,7 @@ class WebWatcher extends events_1.EventEmitter {
         this.inProcess = false;
         this.page = null;
         this.id = uuid();
+        this._running = true;
         this.url = url;
         this.selector = selector;
         const defaultOptCopy = JSON.parse(JSON.stringify(defaultOptions));
@@ -119,7 +120,8 @@ class WebWatcher extends events_1.EventEmitter {
             const currentTime = new Date().getTime();
             if (this.last &&
                 currentTime - this.lastRunTime < this.intervel ||
-                this.inProcess) {
+                this.inProcess ||
+                !this._running) {
                 return;
             }
             if (this.options.parseJs && !this.page) {
@@ -153,6 +155,18 @@ class WebWatcher extends events_1.EventEmitter {
             this.emit('change', dist);
             fs.writeFile(`./.cache/${this.hash}`, JSON.stringify(this.last), e => e);
         }
+    }
+    get running() {
+        return this._running;
+    }
+    set running(state) {
+        this._running = !!state;
+    }
+    stop() {
+        this.running = false;
+    }
+    start() {
+        this.running = true;
     }
 }
 exports.default = WebWatcher;

@@ -6,9 +6,6 @@
         "intervel": 5000,
         "email": "ggongpei@qq.com",
         "webhook": "",
-        "state": {
-            "code": 1,
-            "msg": "Running"
-        }
+        "running": true
     }
 ]

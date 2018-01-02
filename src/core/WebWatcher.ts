@@ -6,7 +6,7 @@ import * as https from 'https';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import {wwHash} from '../utils';
+import { wwHash } from '../utils';
 
 interface WebWatcherConfig extends AxiosRequestConfig {
     parseJs?: boolean,
@@ -14,6 +14,7 @@ interface WebWatcherConfig extends AxiosRequestConfig {
     change? (data: string): void,
     nochange? (data: string): void,
     intervel?: number // milliseconds
+    webhook?: string
 }
 const defaultOptions: WebWatcherConfig = {
     method: 'get',
@@ -41,7 +42,7 @@ const uuid = (() => {
     return function () {
         return id++;
     }
-});
+})();
 
 export default class WebWatcher extends EventEmitter {
 
@@ -60,6 +61,7 @@ export default class WebWatcher extends EventEmitter {
     public webhook: string;
     public intervel: number;
     public selector: string;
+    private _running = true;
     
     constructor (url: string, selector: string, options?: WebWatcherConfig) {
         super();
@@ -134,7 +136,8 @@ export default class WebWatcher extends EventEmitter {
         if (
             this.last &&
             currentTime - this.lastRunTime < this.intervel ||
-            this.inProcess
+            this.inProcess ||
+            !this._running
         ) {
             return;
         }
@@ -174,4 +177,20 @@ export default class WebWatcher extends EventEmitter {
             fs.writeFile(`./.cache/${this.hash}`, JSON.stringify(this.last), e => e);
         }
     }
+
+    get running () {
+        return this._running;
+    }
+
+    set running (state) {
+        this._running = !!state;
+    }
+
+    stop () {
+        this.running = false;
+    }
+    start () {
+        this.running = true;
+    }
+
 }

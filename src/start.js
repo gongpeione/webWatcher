@@ -13,10 +13,21 @@ dotenv.config({
 });
 
 const listFile = path.resolve(__dirname, './list.json');
-// const master = require(path.resolve(__dirname, './dist/ww'));
+const master = require(path.resolve(__dirname, './dist/ww')).default;
  
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use('/static', express.static(path.resolve(__dirname, './view/static/')));
+
+function isAuthenticated (req, res, next) {
+    token = req.cookies.token;
+    if (token) {
+        jwt.verify(token, process.env.WW_SECRET, (err, decoded) => {
+            if (err) { res.redirect('/'); }
+            next();
+        });
+    }
+}
 
 app.get('/', function (req, res) {
     res.sendFile('./view/index.html', {"root": __dirname});
@@ -62,7 +73,7 @@ app.post('/login', (req, res) => {
         }, process.env.WW_SECRET);
         res.cookie('token', token, { 
             httpOnly: true,
-            expires: new Date(Date.now() + (60 * 60 * 24))
+            expires: new Date(Date.now() + (60 * 60 * 24 * 1000))
         });
         res.json({
             code: 1,
@@ -76,22 +87,42 @@ app.post('/login', (req, res) => {
     }
 });
 
-app.get('/list', (req, res) => {
-    const list = fs.readFile(listFile, (err, data) => {
-        if (err) {
-            return console.log(err);
-        }
-        res.json(JSON.parse(data));
-    });
+app.get('/list', isAuthenticated, (req, res) => {
+    const list = [];
+    for (let ww of master) {
+        list.push({
+            id: ww.id,
+            url: ww.url,
+            email: ww.email,
+            webhook: ww.webhook,
+            intervel: ww.intervel,
+            selector: ww.selector,
+            running: ww.running
+        });
+    }
+    res.json(list);
 });
 
-app.post('/list', (req, res) => {
+app.post('/list', isAuthenticated, (req, res) => {
     fs.writeFile(listFile, req.body, {encoding: 'utf8'}, err => {
         if (err) {
             res.json({code: -1, msg: err});
         }
         res.json({code: 1});
     });
+});
+
+app.post('/toggleState', isAuthenticated, (req, res) => {
+    const id = req.body.id;
+    for (let ww of master) {
+        if (ww.id === id) {
+            ww.running ? ww.stop() : ww.start();
+            res.json({
+                code: 1,
+                msg: `[id: ${id}] ${ ww.running ? 'Started' : 'Stopped' }.`
+            });
+        }
+    }
 });
 
 app.listen(process.env.WW_PORT);

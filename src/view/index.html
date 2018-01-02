@@ -18,40 +18,7 @@
     <!-- import CSS -->
     <link href="https://cdn.bootcss.com/normalize/7.0.0/normalize.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <style>
-        #app {
-            width: 90vw;
-            max-width: 1080px;
-            margin: 0 auto;
-        }
-        h1 {
-            text-align: center;
-            color: #409EFF;
-            margin: 80px;
-        }
-        .addNew {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .addNew > .el-input,
-        .addNew > .el-checkbox {
-            padding: 0 5px;
-        }
-        .addNew .el-input-number {
-            width: 500px;
-        }
-        .control {
-            text-align: center;
-        }
-        .login {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .login .el-input {
-            margin-bottom: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
@@ -62,6 +29,21 @@
 
         <template v-if="loggedIn">
             <el-table :data="data" style="width: 100%">
+                    
+                <el-table-column
+                    fixed
+                    label="State"
+                    width="80"
+                >
+                    <template slot-scope="scope">
+                        <el-tag 
+                            :type="scope.row.running ? 'success' : 'warning'"
+                            size="mini"
+                        >
+                            {{ scope.row.running ? 'Running' : 'Stop' }}
+                        </el-tag>
+                    </template>
+                </el-table-column>
                 <el-table-column label="Url" width="300">
                     <template slot-scope="scope">
                         <el-input placeholder="URL" v-model="scope.row.url" size="mini"></el-input>
@@ -92,10 +74,13 @@
                         <el-input placeholder="Webhook" v-model="scope.row.webhook" size="mini"></el-input>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="Operations" width="100">
+                <el-table-column fixed="right" label="Operations" width="300">
                     <template slot-scope="scope">
-                        <el-button @click="save" type="primary" size="small" round>Save</el-button>
-                        <!-- <el-button @click="remove" type="danger" size="small" round>Remove</el-button> -->
+                        <el-button @click="toggleState(scope.row.id, scope.row)" type="primary" size="small" round>
+                            {{ scope.row.running ? 'Stop' : 'Start' }}
+                        </el-button>
+                        <el-button @click="save(scope.row.id, scope.row)" type="primary" size="small" round>Save</el-button>
+                        <el-button @click="remove(scope.row.id, scope.row)" type="danger" size="small" round>Remove</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -111,7 +96,7 @@
             </section>
             <br>
             <div class="control">
-                <el-button type="success" @click="save" round>Save</el-button>
+                <el-button type="success" @click="saveAll" round>Save</el-button>
             </div>
         </template>
         <template v-else>
@@ -129,105 +114,7 @@
 <!-- import JavaScript -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script src="https://cdn.bootcss.com/axios/0.17.1/axios.js"></script>
-<script>
-    const http = axios.create({
-        timeout: 5000,
-        withCredentials: true
-    });
-    new Vue({
-        el: '#app',
-        data: function () {
-            return {
-                visible: false,
-                data: null,
-                url: '',
-                selector: '',
-                parseJs: '',
-                intervel: 0,
-                email: '',
-                webhook: '',
-                loggedIn: false,
-                user: {
-                    username: '',
-                    password: ''
-                }
-            }
-        },
-        methods: {
-            save: function () {
-                fetch('/list', {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "text/plain"
-                    },
-                    body: JSON.stringify(this.data)
-                }).then(res => res.json()).then(data => {
-                    if (data.code > 0) {
-                        this.$message('Save Successful!', {type: 'success'});
-                    } else {
-                        this.$message.error('Failed, ' + data.msg);
-                    }
-                });
-            },
-            edit: function (obj) {
-                this.$message(obj, this.data.indexOf(obj))
-            },
-            add: function () {
-                if (
-                    !this.url ||
-                    !this.selector
-                ) {
-                    this.$message.error('URL or selector cannot be empty.');
-                    return;
-                }
-                this.data.push({
-                    url: this.url,
-                    selector: this.selector,
-                    parseJs: this.parseJs,
-                    intervel: this.intervel,
-                    email: this.email,
-                    webhook: this.webhook
-                });
-                this.url = '';
-                this.selector = '';
-                this.parseJs = false;
-                this.intervel = 0;
-                this.email = '';
-                this.webhook = '';
-                this.save();
-            },
-            login: function (e) {
-                e.preventDefault();
-                
-                http.post('/login', this.user).then(({data}) => {
-                    if (data.code < 0) {
-                        this.$message.error(data.msg);
-                        return;
-                    }
-                    if (data.code === 1) {
-                        this.loggedIn = true;
-                        this.getList();
-                    }
-                });
-
-                return false;
-            },
-            getList () {
-                http.get('/list').then(({data}) => {
-                    this.data = data;
-                });
-            }
-        },
-        created: function () {
-            http.get('/login').then(({data}) => {
-                if (data.code === 1) {
-                    this.loggedIn = true;
-                    this.getList();
-                }
-            });
-        }
-    })
-</script>
+<script src="/static/index.js"></script>
 
 </body>
 

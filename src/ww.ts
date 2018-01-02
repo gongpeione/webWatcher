@@ -13,14 +13,14 @@ let timer: NodeJS.Timer = null;
 
 init();
 
-fs.watch(listFile, { encoding: 'utf8' }, (eventType, filename) => {
-    const listNew = fs.readFileSync(listFile, {encoding: 'utf8'});
-    if (listNew !== listStr) {
-        listStr = listNew;
-        list = JSON.parse(listStr);
-        init();
-    }
-});
+// fs.watch(listFile, { encoding: 'utf8' }, (eventType, filename) => {
+//     const listNew = fs.readFileSync(listFile, {encoding: 'utf8'});
+//     if (listNew !== listStr) {
+//         listStr = listNew;
+//         list = JSON.parse(listStr);
+//         init();
+//     }
+// });
 
 function init () {
     if (timer) {
@@ -42,10 +42,10 @@ function init () {
     master.removeAll();
     master.add(wwList);
     
-    timer = setInterval(() => {
-        master.walk();
-        EmailQueue.walk();
-    }, 1000);
+    // timer = setInterval(() => {
+    //     master.walk();
+    //     EmailQueue.walk();
+    // }, 1000);
 }
 
 export default master;
