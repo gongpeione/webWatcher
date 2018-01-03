@@ -1,10 +1,9 @@
 @import '~antd/dist/antd.css';
 
-html, body, #root, .App {
+html, body, #root, .App, main {
   height: 100%;
 }
 main.login {
-  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -48,4 +47,28 @@ main.login h1 {
 }
 .login-form .ant-form-item:last-of-type {
   margin-bottom: 0;
+}
+
+main.content {
+  display: flex;
+}
+main.content nav {
+  width: 200px;
+  height: 100%;
+  border-right: 1px solid #e8e8e8;
+}
+main.content .ant-menu-inline {
+  border-right: none;
+}
+main.content .logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+  /* border-bottom: 1px solid #e8e8e8; */
+}
+main.content nav img {
+  max-width: 100%;
+  height: auto;
+  margin: 0
 }
