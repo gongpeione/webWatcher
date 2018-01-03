@@ -29,6 +29,29 @@ function isAuthenticated (req: express.Request, res: express.Response, next: exp
     }
 }
 
+app.use((req, res, next) => {
+    const allowedOrigins = [ 
+        'http://localhost:3000', 
+        'http://localhost:3011',
+        'http://localhost:' + process.env.WW_PORT
+    ];
+    if(allowedOrigins.indexOf(req.headers.origin as string) > -1){
+        res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+    }
+    res.set({
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, Content-Length, X-Requested-With'
+    });
+
+    if ('OPTIONS' === req.method) {
+        res.send(200);
+    }
+    else {
+        next();
+    }
+});
+
 app.get('/', function (req, res) {
     res.sendFile('./view/build/index.html', {"root": __dirname});
 });
@@ -100,7 +123,10 @@ app.get('/list', isAuthenticated, (req, res) => {
             running: ww.running
         });
     }
-    res.json(list);
+    res.json({
+        code: 1,
+        list
+    });
 });
 
 app.post('/list', isAuthenticated, (req, res) => {

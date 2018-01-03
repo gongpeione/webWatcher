@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import logo from './img/logo.svg';
 import { Menu, Icon, Button } from 'antd';
 
 const SubMenu = Menu.SubMenu;
