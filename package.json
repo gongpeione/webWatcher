@@ -25,6 +25,7 @@
     "puppeteer": "^0.13.0"
   },
   "scripts": {
-    "start": "cd src && pm2 start start.ts --name WW --watch"
+    "start": "yarn buildView && cd src && pm2 start start.ts --name WW --watch",
+    "buildView": "cd src/view && yarn build"
   }
 }

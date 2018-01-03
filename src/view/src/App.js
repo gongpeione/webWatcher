@@ -1,18 +1,29 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { Menu, Icon, Button } from 'antd';
+import Main from './Main';
+import Login from './Login';
+
+const SubMenu = Menu.SubMenu;
 
 class App extends Component {
+  state = {
+    collapsed: false,
+  }
+  toggleCollapsed = () => {
+    this.setState({
+      collapsed: !this.state.collapsed,
+      isLogin: false
+    });
+  }
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        {
+          this.state.isLogin ? 
+            <Main></Main> : <Login></Login>
+        }
       </div>
     );
   }

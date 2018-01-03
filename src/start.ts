@@ -17,7 +17,7 @@ dotenv.config({
 const app = express();
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use('/static', express.static(path.resolve(__dirname, './view/static/')));
+app.use(express.static(path.resolve(__dirname, './view/build/')));
 
 function isAuthenticated (req: express.Request, res: express.Response, next: express.NextFunction) {
     const token = req.cookies.token;
@@ -30,7 +30,7 @@ function isAuthenticated (req: express.Request, res: express.Response, next: exp
 }
 
 app.get('/', function (req, res) {
-    res.sendFile('./view/index.html', {"root": __dirname});
+    res.sendFile('./view/build/index.html', {"root": __dirname});
 });
 
 app.get('/login', (req, res) => {
@@ -154,4 +154,4 @@ app.post('/remove', isAuthenticated, (req, res) => {
     });
 });
 
-app.listen(process.env.WW_PORT);
+app.listen(process.env.WW_PORT || 3000);
