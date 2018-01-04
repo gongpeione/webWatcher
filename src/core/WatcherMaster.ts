@@ -97,4 +97,6 @@ class WatcherMaster {
     }
 }
 
-export default new WatcherMaster();
+const master = new WatcherMaster();
+
+export default master;
